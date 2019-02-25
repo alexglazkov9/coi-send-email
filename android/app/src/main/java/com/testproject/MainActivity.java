@@ -1,6 +1,7 @@
 package com.testproject;
 
 import com.facebook.react.ReactActivity;
+import com.reactlibrary.RNSmtpMailerPackage;
 
 public class MainActivity extends ReactActivity {
 

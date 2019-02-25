@@ -9,7 +9,7 @@
 
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
-import MailCore from 'react-native-mailcore';
+import RNSmtpMailer from "react-native-smtp-mailer";
 
 const IMAP_HOST = "imap.googlemail.com";
 const IMAP_PORT = 993;
@@ -28,32 +28,27 @@ export default class App extends React.Component {
     };
   }
 
+  checkState = () => {
+    alert(this.state.from + ' ' + this.state.password + ' ' + this.state.to + ' ' + this.state.message);
+  }
+
   connect = () => {
-    console.log(this.state);
-    MailCore.sendMail({
-      hostname: SMTP_HOST,
-      port: SMTP_PORT,
+    RNSmtpMailer.sendMail({
+      mailhost: "smtp.gmail.com",
+      port: "465",
+      ssl: true,
       username: this.state.from,
       password: this.state.password,
-      from: {
-        addressWithDisplayName: "From label",
-        mailbox: this.state.from
-      },
-      to: {
-        addressWithDisplayName: "To label",
-        mailbox: this.state.to
-      },
-      subject: 'Testing RN MailCore' + new Date(),
-      htmlBody: `<h1> How is it going </h1>
-                <p> Test message </p>
-                `
+      from: this.state.from,
+      recipients: this.state.to,
+      subject: "SMTP Test",
+      htmlBody: this.state.message,
+      attachmentPaths: [],
+      attachmentNames: [], 
+      attachmentTypes: []
     })
-    .then(result => {
-      alert(result.status);
-    })
-    .catch(error => {
-      alert(error);
-    });
+      .then(success => alert(success))
+      .catch(err => alert(err));
   }
 
   render() {
@@ -68,13 +63,16 @@ export default class App extends React.Component {
           onChangeText={(password) => this.setState({password})}/>
         <TextInput
           placeholder="Type in recepient address"
-          onChangeText={(message) => this.setState({message})}/>
+          onChangeText={(to) => this.setState({to})}/>
         <TextInput
           placeholder="Type in your message"
           onChangeText={(message) => this.setState({message})}/>
         <Button
           title="Send"
           onPress={this.connect}/>
+          <Button
+          title="Check state"
+          onPress={this.checkState}/>
       </View>
     );
   }

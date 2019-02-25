@@ -132,11 +132,14 @@ android {
         }
     }
     packagingOptions{
+        exclude 'META-INF/mimetypes.default'
+		exclude 'META-INF/mailcap.default'
         pickFirst '**/libgnustl_shared.so'
     }
 }
 
 dependencies {
+    implementation project(':react-native-smtp-mailer')
     implementation project(':react-native-mailcore')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
