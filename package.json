@@ -10,7 +10,7 @@
     "react": "16.6.3",
     "react-native": "0.58.5",
     "react-native-mailcore": "0.0.3",
-    "react-native-smtp-mailer": "^1.1.9"
+    "react-native-smtp-mailer": "github:dsych/react-native-smtp-mailer#master"
   },
   "devDependencies": {
     "babel-core": "7.0.0-bridge.0",
