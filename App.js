@@ -8,13 +8,13 @@
  */
 
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
-import RNSmtpMailer from "react-native-smtp-mailer";
+import { StyleSheet, Text, View, TextInput, Button, FlatList } from 'react-native';
+import { RNImapMailer, RNSmtpMailer } from "react-native-smtp-mailer";
 
 const IMAP_HOST = "imap.googlemail.com";
-const IMAP_PORT = 993;
+const IMAP_PORT = "993";
 const SMTP_HOST = "smtp.gmail.com";
-const SMTP_PORT = 465;
+const SMTP_PORT = "465";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -24,8 +24,13 @@ export default class App extends React.Component {
       password:'',
       to:'',
       message:'',
-      connection: null
+      connection: null,
+      imapMsgs: {}
     };
+  }
+
+  componentDidMount() {
+
   }
 
   checkState = () => {
@@ -33,9 +38,27 @@ export default class App extends React.Component {
   }
 
   connect = () => {
+    RNImapMailer.connect({
+      mailhost: IMAP_HOST,
+      port: IMAP_PORT,
+      ssl: true,
+      username: this.state.from,
+      password: this.state.password
+    })
+      .then((success) => alert(success))
+      .catch(err => alert(err));;;
+  }
+
+  fetchMails = () => {
+    RNImapMailer.checkMail()
+      .then(success => this.setState({ imapMsgs: success }))
+      .catch(err => alert(err));;
+  }
+
+  sendMail = () => {
     RNSmtpMailer.sendMail({
-      mailhost: "smtp.gmail.com",
-      port: "465",
+      mailhost: SMTP_HOST,
+      port: SMTP_PORT,
       ssl: true,
       username: this.state.from,
       password: this.state.password,
@@ -61,6 +84,12 @@ export default class App extends React.Component {
           placeholder="Type in your password"
           secureTextEntry={true}
           onChangeText={(password) => this.setState({password})}/>
+        <Button
+          title="Connect"
+          onPress={this.connect}/>
+          <Button
+          title="Fetch"
+          onPress={this.fetchMails}/>
         <TextInput
           placeholder="Type in recepient address"
           onChangeText={(to) => this.setState({to})}/>
@@ -70,9 +99,10 @@ export default class App extends React.Component {
         <Button
           title="Send"
           onPress={this.connect}/>
-          <Button
-          title="Check state"
-          onPress={this.checkState}/>
+        <FlatList
+          data={this.state.imapMsgs.messages}
+          renderItem={({item}) => <Text>{item.from + ' - ' + item.subject}</Text>}
+          ></FlatList>
       </View>
     );
   }
